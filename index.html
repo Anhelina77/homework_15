@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 15</title>
+</head>
+<body>
+    <script>
+        const films = [
+  {name: 'film 1', genres: ['genre1', 'genre2', 'genre3'], year: 2005},
+  {name: 'film 3', genres: ['genre4', 'genre5'], year: 2006},
+  {name: 'film 4', genres: ['genre1', 'genre5', 'genre6'], year: 2007},
+  {name: 'film 5', genres: ['genre2', 'genre3'], year: 2008},
+  {name: 'film 6', genres: ['genre4', 'genre6'], year: 2009},
+];
+
+function createLibrary(data) {
+  const films = {};
+
+  data.forEach(film => {
+    film.genres.forEach(genre => {
+      if (!films[genre]) {
+        films[genre] = [];
+      }
+      films[genre].push(film);
+    });
+  });
+
+  return films;
+}
+
+const myMovies = createLibrary(films);
+
+myMovies[Symbol.iterator] = function () {
+  const values = Object.values(this);
+  const genres = Object.keys(this);
+  const result = [];
+  let valueIndex = 0;
+  let innerIndex = 0;
+
+  return {
+    next() {
+      for (
+        let genreLength = values.length;
+        valueIndex < genreLength;
+        valueIndex++
+      ) {
+        for (
+          let filmsLength = values[valueIndex].length;
+          innerIndex < filmsLength;
+          innerIndex++
+        ) {
+          const filmGenres = values[valueIndex][innerIndex].genres;
+          if (
+            result.every(itemHave => {
+              return filmGenres.every(genre => genre !== itemHave);
+            })
+          ) {
+            return {
+              done: false,
+              value: values[valueIndex][innerIndex++],
+            };
+          }
+        }
+        result.push(genres[valueIndex]);
+        innerIndex = 0;
+      }
+
+      return {done: true};
+    },
+  };
+};
+
+for (const x of myMovies) {
+  console.log(x);
+}
+    </script>
+</body>
+</html>
